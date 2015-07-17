@@ -9,7 +9,7 @@
 	<title>WebReport</title>
 </head>
 <body ng-controller="WebReportController as webreportCtrl">
-	<report-section reportctrl="webreportCtrl" ng-hide="!webreportCtrl.reporting"></report-section>
 	<search-section reportctrl="webreportCtrl" ng-hide="webreportCtrl.reporting"></search-section>
+	<report-section reportctrl="webreportCtrl" ng-show="webreportCtrl.reporting"></report-section>
 </body>
 </html>
