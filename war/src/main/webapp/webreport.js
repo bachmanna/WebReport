@@ -15,7 +15,8 @@
 		this.studies = {};
 		var ctrl = this;
 		reporting = false;
-		reportingStudy = null;
+		reportingStudy = undefined;
+		ckEditor = undefined;
 
 		this.query = function(filterCtrl){
 			this.studies = $http.get('/webreport/study', { 
@@ -38,12 +39,24 @@
 			ctrl.reportingStudy = study;
 		};
 		
-		this.submitReport = function(ckEditor){
-			$http.put('/webreport/report/' + reportingStudy.pk, ckEditor.data).success(function(data){
-				
+		this.cancelReport = function(){
+			ctrl.reporting = false;
+			ctrl.reportingStudy = undefined;
+		};
+		
+		this.submitReport = function(){
+			$http.post('/webreport/report/' + ctrl.reportingStudy.pk, 
+						ctrl.ckEditor.getData(),
+						{headers : {'Content-Type' : 'text/html'}}
+			).success(function(data){
+//TODO				
 			});
-		}
+		};
 
+		this.insertEditor = function(component){
+			ctrl.ckEditor = CKEDITOR.replace(component);
+		};
+		
 	}]);
 
 	app.directive("searchSection", function() {
@@ -65,4 +78,18 @@
 			},
 		};
 	});
+	
+	app.directive( 'elemReady', function( $parse ) {
+		   return {
+		       restrict: 'A',
+		       link: function( $scope, elem, attrs ) {    
+		          elem.ready(function(){
+		            $scope.$apply(function(){
+		                var func = $parse(attrs.elemReady);
+		                func($scope);
+		            })
+		          })
+		       }
+		    }
+		})
 })();

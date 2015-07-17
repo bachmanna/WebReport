@@ -1,18 +1,16 @@
-<section id="reportSection">
+<section id="reportSection" >
 	<h2>Laudando exame de {{reportctrl.reportingStudy.patientName}}</h2>
 
 	<form name="reportForm">
-		<textarea name="report" id="report-editor" rows="20" cols="80">
+		<textarea name="report" id="report-editor" rows="20" cols="80"  elem-ready="reportctrl.insertEditor('report-editor')">
 			This is my textarea to be replaced with CKEditor.
 		</textarea>
-		<script>
-			// Replace the <textarea id="editor1"> with a CKEditor instance, using default configuration.
-			CKEDITOR.replace( 'report-editor' );
-		</script>
 
 		<fieldset class="reportForm">
-			<input type="submit" value="Enviar" ng-click="reportctrl.submitReport(CKEDITOR.instances('report-editor'))"/>
-			<input type="submit" value="Cancelar"/>
+			<input type="submit" value="Enviar" ng-click="reportctrl.submitReport()"/>
+			<input type="submit" value="Cancelar" ng-click="reportctrl.cancelReport()" />
 		</fieldset>
 	</form>
+	
+	
 </section>

@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.bisol.medical.webreport.persistence.StudyDto;
 
-@Path("/study")
 @Local
+@Path("/study")
 public interface StudyService {
 	
 	@GET
