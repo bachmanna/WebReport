@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html ng-app="WebReport">
+<head>
+	<meta charset="utf-8" lang="pt_br">
+	<link href="styles/search.css" type="text/css" media="screen" rel="stylesheet">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.19/angular.min.js"></script>
+	<script type="text/javascript" src="webreport.js"></script>
+	<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
+	<title>WebReport</title>
+</head>
+<body ng-controller="WebReportController as webreportCtrl">
+	<report-section reportctrl="webreportCtrl" ng-hide="!webreportCtrl.reporting"></report-section>
+	<search-section reportctrl="webreportCtrl" ng-hide="webreportCtrl.reporting"></search-section>
+</body>
+</html>

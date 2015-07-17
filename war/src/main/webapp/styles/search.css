@@ -1,0 +1,58 @@
+body{
+	background-color: #f6f6f6;
+	font-family: serif;
+}
+
+fieldset {
+	border: 2px solid #98bf21;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	padding: 10px;
+}
+
+table, td, th {
+	border: 2px solid #0;
+	text-align: left;
+}
+
+li {
+	display: inline;
+	float: left;
+}
+
+a:link, a:visited {
+	display: block;
+	width: 120px;
+	color: #FFFFFF;
+	background-color: #98bf21;
+	font-weight: bold;
+	padding: 4px;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+a:hover, a:active {
+	background-color: #7A991A;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.idented {
+	text-indent: 3em;
+}
+
+.searchFilter {
+	background-color: #e6e6e6;
+}
+
+tr #study {
+	
+}
