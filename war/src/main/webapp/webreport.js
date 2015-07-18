@@ -12,11 +12,14 @@
 	});
 	
 	app.controller('WebReportController',  ['$http', function($http){
-		this.studies = {};
-		var ctrl = this;
+		this.studies = [];
 		this.reporting = false;
 		this.reportingStudy = undefined;
 		this.ckEditor = undefined;
+		
+		var ctrl = this;
+		console.log('WebReportController (this): ' + JSON.stringify(this));
+		console.log('WebReportController (var): ' + JSON.stringify(ctrl));
 		
 		this.reportStatusIcon = function(study){
 			if(study.reportStatus === 'typed') return '/webreport/styles/reportTyped.png';
@@ -27,25 +30,44 @@
 		};
 		
 		this.query = function(filterCtrl){
-			this.studies = $http.get('/webreport/study', { 
-															params : { 
-																		pid : filterCtrl.patientId, 
-																		pna : filterCtrl.patientName,
-																		acc : filterCtrl.accessionNumber,
-																		sd : filterCtrl.startDate,
-																		ed : filterCtrl.endDate,
-																		sm : filterCtrl.modality,
-																		rs : filterCtrl.reportStatus
-																	}
-														}
-			).success(function(data){
+			var queryParams = { 
+					pid : filterCtrl.patientId, 
+					pna : filterCtrl.patientName,
+					acc : filterCtrl.accessionNumber,
+					sd : filterCtrl.startDate,
+					ed : filterCtrl.endDate,
+					sm : filterCtrl.modality,
+					rs : filterCtrl.reportStatus
+			};
+			
+			console.log('query: ' + JSON.stringify(queryParams));
+			$http.get('/webreport/study', {params : queryParams}).success(function(data){
 				ctrl.studies = data;
 			});
 		};
 		
 		this.report = function(study){
-			ctrl.reporting = true;
-			ctrl.reportingStudy = study;
+			console.log('downloading reports of study ' + study.pk + ' - ' + study.patientName);
+//			console.log('reporting: ' + JSON.stringify(ctrl.reporting));
+			
+			$http.get('/webreport/report/byStudy/' + study.pk).success(function(data){
+				console.log('success: data = ' + JSON.stringify(data));
+				ctrl.reportingStudy = study;
+				ctrl.reporting = true;
+				
+				if(data){
+					console.log('setting editor data = ' + data.report);
+					ctrl.ckEditor.setData(data.report);
+				} else {
+					console.log('setting editor data = <p></p>');
+					ctrl.ckEditor.setData('<p></p>');
+				}
+				
+			}).error(function(data){
+				console.log('error: data = ' + JSON.stringify(data));
+//	TODO do something
+			});
+			
 		};
 		
 		this.cancelReport = function(){
@@ -58,10 +80,11 @@
 						ctrl.ckEditor.getData(),
 						{headers : {'Content-Type' : 'text/html'}}
 			).success(function(data){
+// TODO get filter params				
+				ctrl.query({});
 				ctrl.reporting = false;
 				ctrl.reportingStudy = undefined;
 				
-				ctrl.query();
 			});
 		};
 

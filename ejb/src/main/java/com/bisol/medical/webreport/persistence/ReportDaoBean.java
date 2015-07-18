@@ -17,7 +17,8 @@ public class ReportDaoBean implements ReportDao {
 	
 	@Override
 	public Report byStudy(long studyPk){
-		return em.createNamedQuery("webreport.byStudy", Report.class).setParameter("studyPk", studyPk).getSingleResult();
+		List<?> result = em.createNamedQuery("webreport.byStudy").setParameter("studyPk", studyPk).getResultList();
+		return (Report) (result == null || result.isEmpty() ? null : result.get(0)); // 1 or 0, damn getSingleResult for not supporting empty result 
 	}
 
 	@Override
