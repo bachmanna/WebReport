@@ -1,6 +1,6 @@
 CREATE TABLE webreport (
 	pk				SERIAL8 NOT NULL CONSTRAINT webreport_pk PRIMARY KEY,
-	study_fk		SERIAL8 UNIQUE NOT NULL,
+	study_fk		INT8 UNIQUE NOT NULL,
 	report_data		TEXT NOT NULL,
 	report_datetime	TIMESTAMP NOT NULL,
 	status			VARCHAR(15) NOT NULL DEFAULT 'typed',
@@ -9,7 +9,7 @@ CREATE TABLE webreport (
 
 CREATE TABLE webreport_amendment (
 	pk					SERIAL8 NOT NULL CONSTRAINT webreport_amendment_pk PRIMARY KEY,
-	webreport_fk		SERIAL8 NOT NULL,
+	webreport_fk		INT8 NOT NULL,
 	report_data			TEXT NOT NULL,
 	amendment_datetime	TIMESTAMP NOT NULL,
 	status				VARCHAR(15) NOT NULL DEFAULT 'typed',
@@ -22,4 +22,4 @@ CREATE INDEX webreport_amendment_fk ON webreport_amendment(webreport_fk);
 --drop table webreport_amendment;
 --drop table webreport;
 
-SELECT *FROM webreport report WHERE report.study_fk = 1;
+--SELECT *FROM webreport report WHERE report.study_fk = 1;

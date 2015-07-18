@@ -1,7 +1,6 @@
 (function(){
 	var app = angular.module('WebReport', []);
 	
-		
 	app.controller('SearchFilterController',  function(){
 		this.patientName = null;
 		this.patientId = null;
@@ -15,12 +14,16 @@
 	app.controller('WebReportController',  ['$http', function($http){
 		this.studies = {};
 		var ctrl = this;
-		reporting = false;
-		reportingStudy = undefined;
-		ckEditor = undefined;
+		this.reporting = false;
+		this.reportingStudy = undefined;
+		this.ckEditor = undefined;
 		
 		this.reportStatusIcon = function(study){
-//TODO			
+			if(study.reportStatus === 'typed') return '/webreport/styles/reportTyped.png';
+			if(study.reportStatus === 'released') return '/webreport/styles/reportReleased.png';
+			if(study.reportStatus === 'amended') return '/webreport/styles/reportAmended.png';
+			return '';
+//			return '/styles/reportNothing.png';
 		};
 		
 		this.query = function(filterCtrl){
@@ -55,7 +58,10 @@
 						ctrl.ckEditor.getData(),
 						{headers : {'Content-Type' : 'text/html'}}
 			).success(function(data){
-//TODO				
+				ctrl.reporting = false;
+				ctrl.reportingStudy = undefined;
+				
+				ctrl.query();
 			});
 		};
 
