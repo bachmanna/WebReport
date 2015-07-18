@@ -1,17 +1,37 @@
 (function(){
 	var app = angular.module('WebReport', []);
 	
-	app.controller('SearchFilterController',  function(){
-		this.patientName = null;
-		this.patientId = null;
-		this.accessionNumber = null;
-		this.startDate = null;
-		this.endDate = null;
-		this.modality = null;
-		this.reportStatus = null
+	app.service('queryFilter', function() {
+		var queryFilter = {
+				pid : null, 
+				pna : null,
+				acc : null,
+				sd : null,
+				ed : null,
+				sm : null,
+				rs : null
+		};
+	    
+	    return {
+	        getQueryFilter : function() {
+	            return queryFilter;
+	        }
+	    }
 	});
+
+	app.controller('SearchFilterController',  ['queryFilter', function(queryFilter){
+		this.queryParams = queryFilter.getQueryFilter();
+		
+//		this.patientName = queryFilter.pna;
+//		this.patientId = queryFilterpid;
+//		this.accessionNumber = acc;
+//		this.startDate = sd;
+//		this.endDate = ed;
+//		this.modality = sm;
+//		this.reportStatus = rs;		
+	}]);
 	
-	app.controller('WebReportController',  ['$http', function($http){
+	app.controller('WebReportController',  ['$http', 'queryFilter', function($http, queryFilter){
 		this.studies = [];
 		this.reporting = false;
 		this.reportingStudy = undefined;
@@ -30,16 +50,18 @@
 		};
 		
 		this.query = function(filterCtrl){
-			var queryParams = { 
-					pid : filterCtrl.patientId, 
-					pna : filterCtrl.patientName,
-					acc : filterCtrl.accessionNumber,
-					sd : filterCtrl.startDate,
-					ed : filterCtrl.endDate,
-					sm : filterCtrl.modality,
-					rs : filterCtrl.reportStatus
-			};
+			var queryParams = queryFilter.getQueryFilter();
+//			var queryParams = { 
+//					pid : filterCtrl.patientId, 
+//					pna : filterCtrl.patientName,
+//					acc : filterCtrl.accessionNumber,
+//					sd : filterCtrl.startDate,
+//					ed : filterCtrl.endDate,
+//					sm : filterCtrl.modality,
+//					rs : filterCtrl.reportStatus
+//			};
 			
+			console.log('queryFilter = ' + JSON.stringify(queryParams));
 			console.log('query: ' + JSON.stringify(queryParams));
 			$http.get('/webreport/study', {params : queryParams}).success(function(data){
 				ctrl.studies = data;
@@ -75,13 +97,13 @@
 			ctrl.reportingStudy = undefined;
 		};
 		
-		this.submitReport = function(){
+		this.submitReport = function(filterCtrl){
 			$http.post('/webreport/report/byStudy/' + ctrl.reportingStudy.pk, 
 						ctrl.ckEditor.getData(),
 						{headers : {'Content-Type' : 'text/html'}}
 			).success(function(data){
 // TODO get filter params				
-				ctrl.query({});
+				ctrl.query(filterCtrl);
 				ctrl.reporting = false;
 				ctrl.reportingStudy = undefined;
 				
