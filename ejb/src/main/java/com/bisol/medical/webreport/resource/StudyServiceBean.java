@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.annotation.ejb.LocalBinding;
 
+import com.bisol.medical.webreport.ReportStatus;
 import com.bisol.medical.webreport.persistence.StudyDao;
 import com.bisol.medical.webreport.persistence.StudyDto;
 
@@ -18,23 +19,25 @@ public class StudyServiceBean implements StudyService {
 	@EJB
 	private StudyDao studyDao;
 	
-//	@Override
-//	public StudyDao query(String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, Integer offset, Integer limit){
-//		return studyDao;
-//	}
-	
 	@Override
-	public List<StudyDto> query(String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, Integer offset, Integer limit){
+	public List<StudyDto> query(String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, String reportStatusStr, Integer offset, Integer limit){
 		offset = Math.max(0, offset == null ? 0 : offset);
 		limit = Math.min(100, limit == null ? 100 : limit);
+		ReportStatus reportStatus = parseReportStatus(reportStatusStr);
 		
-		List<StudyDto> studies = studyDao.query(offset, limit, patientID, patientName, accessionNumber, startDate, endDate, modality);
+		List<StudyDto> studies = studyDao.query(offset, limit, patientID, patientName, accessionNumber, startDate, endDate, modality, reportStatus);
 		return studies;
-//		return new StudyListDto(studies);
 	}
-	
-	@Override
-	public String test(){
-		return "{}";
+
+	private ReportStatus parseReportStatus(String reportStatusStr) {
+		if(reportStatusStr != null ){
+			// avoid exceptions
+			for(ReportStatus status : ReportStatus.values()){
+				if(status.name().equals(reportStatusStr)){
+					return status;
+				}
+			}
+		}
+		return null;
 	}
 }

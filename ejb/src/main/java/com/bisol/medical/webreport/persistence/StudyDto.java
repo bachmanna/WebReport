@@ -17,9 +17,11 @@ public class StudyDto {
 	public String patientId;
 	public String patientName;
 	public String studyInstanceUid;
+	public String reportStatus;
 	public long pk;
+	public long reportPk;
 
-	public StudyDto(long pk2, String patientID, String patientName, String accessionNumber, Timestamp studyDateTime, String modalities, String studyInstanceUid) {
+	public StudyDto(long pk2, String patientID, String patientName, String accessionNumber, Timestamp studyDateTime, String modalities, String studyInstanceUid, long reportPk, String reportStatus) {
 		this.pk = pk2;
 		this.patientId = patientID;
 		this.patientName = patientName;
@@ -27,5 +29,7 @@ public class StudyDto {
 		this.studyDateTime = studyDateTime;
 		this.modalities = modalities;
 		this.studyInstanceUid = studyInstanceUid;
+		this.reportPk = reportPk;
+		this.reportStatus = reportStatus;
 	}
 }

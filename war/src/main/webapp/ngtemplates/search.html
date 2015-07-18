@@ -8,6 +8,7 @@
 			<span id="modality"><label id="modality">Modalidade:</label><input type="text" id="modality" ng-model="filterCtrl.modality"></span> 
 			<span id="startDate"><label id="startDate">Data inicial:</label><input type="datetime-local" id="startDate" ng-model="filterCtrl.startDate" ></span>
 			<span id="endDate"><label id="endDate">Data final:</label><input type="datetime-local" id="endDate" ng-model="filterCtrl.endDate" ></span> 
+			<span id="reportStatus"><label id="reportStatus">Laudo:</label><select ng-model="filterCtrl.reportStatus" ng-options="status for status in ['Todos', 'Digitados', 'Liberados']" value="Todos"/></span>
 			<input type="submit" value="Pesquisar" />
 		</form>
 	</div>
@@ -19,8 +20,9 @@
 				<col width="30%">
 				<col width="20%">
 				<col width="20%">
+				<col width="10%">
+				<col width="15%">
 				<col width="5%">
-				<col width="25%">
 			</colgroup>
 			<thead>
 				<tr>
@@ -29,6 +31,7 @@
 					<th>Accession</th>
 					<th>Modalidade</th>
 					<th>Data</th>
+					<th>Laudo</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,6 +41,7 @@
 					<td>{{study.accessionNumber}}</td>
 					<td>{{study.modalities}}</td>
 					<td>{{study.studyDateTime | date:"dd/MM/yyyy hh:mm"}}</td>
+					<td><img ng-src="{{reportctrl.reportStatusIcon(study)}}"/></td>
 				</tr>
 			</tbody>
 		</table>

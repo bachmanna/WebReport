@@ -13,11 +13,11 @@ import javax.ws.rs.core.MediaType;
 import com.bisol.medical.webreport.persistence.StudyDto;
 
 @Local
-@Path("/study")
+@Path(ResourcePath.study)
 public interface StudyService {
 	
 	@GET
-	@Path("/")
+	@Path(ResourcePath.studyQuery)
 	@Produces(MediaType.APPLICATION_JSON)
 	List<StudyDto> query(@QueryParam("pid") String patientID,
 					@QueryParam("pna") String patientName,
@@ -25,11 +25,7 @@ public interface StudyService {
 					@QueryParam("sd") Date startDate,
 					@QueryParam("ed") Date endDate,
 					@QueryParam("sm") String modality,
+					@QueryParam("rs") String reportStatus,
 					@QueryParam("of") Integer offset,
 					@QueryParam("lm") Integer limit);
-
-	@GET
-	@Path("/t")
-	@Produces(MediaType.APPLICATION_JSON)
-	String test();
 }

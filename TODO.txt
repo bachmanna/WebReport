@@ -1,0 +1,4 @@
+- reescrever StudyDao com criteria ou mapedValue
+-- corrigir LIKE
+
+- corrigir uso de THIS no angular 

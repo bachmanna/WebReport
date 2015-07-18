@@ -9,6 +9,7 @@
 		this.startDate = null;
 		this.endDate = null;
 		this.modality = null;
+		this.reportStatus = null
 	});
 	
 	app.controller('WebReportController',  ['$http', function($http){
@@ -17,7 +18,11 @@
 		reporting = false;
 		reportingStudy = undefined;
 		ckEditor = undefined;
-
+		
+		this.reportStatusIcon = function(study){
+//TODO			
+		};
+		
 		this.query = function(filterCtrl){
 			this.studies = $http.get('/webreport/study', { 
 															params : { 
@@ -26,7 +31,8 @@
 																		acc : filterCtrl.accessionNumber,
 																		sd : filterCtrl.startDate,
 																		ed : filterCtrl.endDate,
-																		sm : filterCtrl.modality
+																		sm : filterCtrl.modality,
+																		rs : filterCtrl.reportStatus
 																	}
 														}
 			).success(function(data){
@@ -45,7 +51,7 @@
 		};
 		
 		this.submitReport = function(){
-			$http.post('/webreport/report/' + ctrl.reportingStudy.pk, 
+			$http.post('/webreport/report/byStudy/' + ctrl.reportingStudy.pk, 
 						ctrl.ckEditor.getData(),
 						{headers : {'Content-Type' : 'text/html'}}
 			).success(function(data){
