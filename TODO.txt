@@ -1,4 +1,14 @@
 - reescrever StudyDao com criteria ou mapedValue
 -- corrigir LIKE
 
-- corrigir uso de THIS no angular 
+- login
+-- associar usuario ao laudo
+
+- liberar laudo
+-- criar area read-only para laudo liberdo
+
+- emendar laudo
+-- criar areas read-only para emendas liberadas
+-- impressao de laudo + emendas
+
+- modelos de laudo
