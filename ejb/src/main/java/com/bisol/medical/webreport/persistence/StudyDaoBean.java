@@ -24,6 +24,41 @@ public class StudyDaoBean implements StudyDao {
 					"SELECT patient.pat_id, patient.pat_name, study.accession_no, study.study_datetime, study.mods_in_study, study.study_iuid, study.pk, report.pk, report.status "
 					+ " FROM patient patient JOIN study study ON (study.patient_fk = patient.pk) LEFT JOIN webreport report ON (study.pk = report.study_fk) ";
 	
+/*
+ * Prototype criteria query for study.
+ * Requires that StudyDto to be an @Entity, which requires creating a DB view. 
+ * 	
+	public List<StudyDto> query2(int offset, int limit, String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, ReportStatus reportStatus){
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<StudyDto> criteriaQuery = builder.createQuery(StudyDto.class);
+		Root<StudyDto> studyRoot = criteriaQuery.from(StudyDto.class);
+		criteriaQuery.select(studyRoot);
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		if(accessionNumber != null){
+			predicates.add(buildLikePredicate(builder, studyRoot, "accColumnName"));
+		}
+		
+		if (predicates.size() == 1) {
+			criteriaQuery.where(predicates.get(0));
+		} else {
+			criteriaQuery.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
+		}
+
+		TypedQuery<StudyDto> query = em.createQuery(criteriaQuery);
+
+		if (accessionNumber != null) {
+			query.setParameter("accQueryParam", accessionNumber);
+		}
+
+		return query.setFirstResult(offset).setMaxResults(limit).getResultList();
+	}
+
+	private Predicate buildLikePredicate(CriteriaBuilder builder, Root<StudyDto> studyRoot, String columnName) {
+		ParameterExpression<String> paramExpr = builder.parameter(String.class, columnName);
+		return builder.like(studyRoot.<String>get(columnName), paramExpr ); // db column, or entity mapped field ?
+	}
+*/
 	@Override
 	public List<StudyDto> query(int offset, int limit, String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, ReportStatus reportStatus){
 		int paramIndex = 1;
@@ -56,7 +91,7 @@ public class StudyDaoBean implements StudyDao {
 
 	private int addStringPredicate(StringBuilder query, String paramName, String paramValue, int paramIndex){
 		if(paramValue != null && !paramValue.isEmpty()){
-			addWhereOrAnd(query, paramIndex);
+			addWhereOrAnd(query, paramIndex++);
 			query.append(paramName).append(" like :").append(paramName);
 		}
 		return paramIndex;
@@ -94,6 +129,7 @@ public class StudyDaoBean implements StudyDao {
 	
 	private void addPredicateValue(Query query, String paramName, String paramValue){
 		if(paramValue != null && !paramValue.isEmpty()){
+			paramValue = "%" + paramValue.toUpperCase() + "%";
 			query.setParameter(paramName, paramValue);
 		}
 	}

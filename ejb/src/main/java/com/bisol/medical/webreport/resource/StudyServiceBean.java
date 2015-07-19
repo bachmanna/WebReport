@@ -30,14 +30,10 @@ public class StudyServiceBean implements StudyService {
 	}
 
 	private ReportStatus parseReportStatus(String reportStatusStr) {
-		if(reportStatusStr != null ){
-			// avoid exceptions
-			for(ReportStatus status : ReportStatus.values()){
-				if(status.name().equals(reportStatusStr)){
-					return status;
-				}
-			}
+		switch (reportStatusStr) {
+		case "1": return ReportStatus.typed; 
+		case "2": return ReportStatus.released;
+		default: return null;
 		}
-		return null;
 	}
 }

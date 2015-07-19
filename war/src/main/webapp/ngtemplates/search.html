@@ -8,7 +8,11 @@
 			<span> <label>Modalidade:</label> <input type="text" ng-model="filterCtrl.queryParams.sm"></span> 
 			<span> <label>Data inicial:</label ><input type="datetime-local" ng-model="filterCtrl.queryParams.sd" ></span>
 			<span> <label>Data final:</label> <input type="datetime-local" ng-model="filterCtrl.queryParams.ed" ></span> 
-			<span> <label>Laudo:</label> <select ng-model="filterCtrl.queryParams.rs" ng-options="status for status in ['Todos', 'Digitados', 'Liberados']" value="Todos"/></span>
+			<span> <label>Laudo:</label> 
+				<select ng-model="filterCtrl.queryParams.rs" ng-options="filterCtrl.reportStatusValues.indexOf(status) as status for status in ['Todos', 'Digitados', 'Liberados']" 
+ 
+						value="0"/>
+			</span>
 			<input type="submit" value="Pesquisar" />
 		</form>
 	</div>

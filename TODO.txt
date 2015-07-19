@@ -1,5 +1,4 @@
-- reescrever StudyDao com criteria ou mapedValue
--- corrigir LIKE
+- reescrever StudyDao com criteria (precisa de uma view no BD para mapear numa entidade, overkill)
 
 - login
 -- associar usuario ao laudo
