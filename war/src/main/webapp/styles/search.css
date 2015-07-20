@@ -4,7 +4,7 @@ body {
 }
 
 fieldset.reportForm {
-	border: 2px solid #98bf21;
+	border: 1px solid #ffffff;
 }
 
 table {
@@ -14,8 +14,12 @@ table {
 }
 
 table, td, th {
-	border: 2px solid #0;
+	border: 1px solid #fff;
 	text-align: left;
+}
+
+tr:nth-child(even) {
+	background-color: #fcfcfc;
 }
 
 .idented {
@@ -24,4 +28,12 @@ table, td, th {
 
 .searchFilter {
 	background-color: #e6e6e6;
+}
+
+.releasedReport, .releasedReportHeader, .releasedReportData {
+	border: 1px solid #fff;
+}
+
+.releasedReportData {
+	background-color: #fff;
 }

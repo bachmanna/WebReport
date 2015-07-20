@@ -24,10 +24,11 @@
 		this.queryParams = queryFilter.getQueryFilter();
 	}]);
 	
-	app.controller('WebReportController',  ['$http', 'queryFilter', function($http, queryFilter){
+	app.controller('WebReportController',  ['$http', '$sce', 'queryFilter', function($http, $sce, queryFilter){
 		this.studies = [];
 		this.reporting = false;
 		this.reportingStudy = undefined;
+		this.reportingStudyReports = undefined;
 		this.ckEditor = undefined;
 		
 		var ctrl = this;
@@ -55,17 +56,28 @@
 			console.log('downloading reports of study ' + study.pk + ' - ' + study.patientName);
 			
 			$http.get('/webreport/report/byStudy/' + study.pk).success(function(data){
+				var releasedReports = [];
 				console.log('success: data = ' + JSON.stringify(data));
 				ctrl.reportingStudy = study;
 				ctrl.reporting = true;
+				ctrl.ckEditor.setData('<p></p>');
 				
 				if(data){
-					console.log('setting editor data = ' + data.report);
-					ctrl.ckEditor.setData(data.report);
-				} else {
-					console.log('setting editor data = <p></p>');
-					ctrl.ckEditor.setData('<p></p>');
+					releasedReports = [data];
+					if(data.amendments){
+						releasedReports.push.apply(releasedReports, data.amendments);
+						releasedReports.sort(function(a, b){
+							return a.reportDatetime - b.reportDatetime;
+						});
+					}
 				}
+				
+				// damn sanitization removes styles
+				ctrl.reportingStudyReports = releasedReports.map(function(el){
+					console.log('el=' + JSON.stringify(el));
+					el.report = $sce.trustAsHtml(el.report);
+					return el;
+				});
 				
 			}).error(function(data){
 				console.log('error: data = ' + JSON.stringify(data));

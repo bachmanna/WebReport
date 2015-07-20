@@ -2,6 +2,11 @@
 	<h2>Laudando exame de {{reportctrl.reportingStudy.patientName}}</h2>
 
 	<form name="reportForm">
+		<div class="releasedReport" ng-repeat="report in reportctrl.reportingStudyReports">
+			<div class="releasedReportHeader">Laudado em {{report.reportDatetime | date:'dd/MM/yyyy às hh:mm:ss'}}</div>
+			<div class="releasedReportData" ng-bind-html="report.report"></div>
+		</div>
+		
 		<textarea name="report" id="report-editor" rows="20" cols="80"  elem-ready="reportctrl.insertEditor('report-editor')">
 			This is my textarea to be replaced with CKEditor.
 		</textarea>
