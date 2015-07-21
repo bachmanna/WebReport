@@ -3,11 +3,11 @@ package com.bisol.medical.webreport.resource;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.LocalBinding;
 
 import com.bisol.medical.webreport.ReportStatus;
