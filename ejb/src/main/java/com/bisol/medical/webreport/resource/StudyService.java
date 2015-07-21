@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Local;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -28,4 +30,14 @@ public interface StudyService {
 					@QueryParam("rs") String reportStatus,
 					@QueryParam("of") Integer offset,
 					@QueryParam("lm") Integer limit);
+
+	@GET
+	@Path("/{pk}" + ResourcePath.studyLock)
+	@Produces(MediaType.TEXT_PLAIN)
+	String lockStudy(@PathParam("pk") long pk);
+	
+	@DELETE
+	@Path("/{pk}" + ResourcePath.studyLock + "/{lid}")
+	@Produces(MediaType.TEXT_PLAIN)
+	void unlockStudy(@PathParam("pk") long pk, @PathParam("lid") String lockId);
 }

@@ -3,6 +3,7 @@ package com.bisol.medical.webreport.resource;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -31,8 +32,16 @@ public class ReportServiceBean implements ReportService {
 	@EJB
 	private ReportDao reportDao; 
 	
+	@EJB(mappedName="StudyServiceLocal")
+	private StudyService studyService; 
+	
 	@Override
-	public String submitReport(long studyPk, String releaseStr, String reportText){
+	public Report findByStudy(long studyPk){
+		return reportDao.findByStudy(studyPk);
+	}
+	
+	@Override
+	public String submitReport(long studyPk, String lockId, String releaseStr, String reportText){
 		boolean release = "1".equals(releaseStr);
 		Report reportEntity = reportDao.findByStudy(studyPk);
 		
@@ -50,6 +59,8 @@ public class ReportServiceBean implements ReportService {
 		if(release){
 			reportEntity.status = ReportStatus.released;
 		}
+	
+		StudyLockService.unlockStudy(studyPk, UUID.fromString(lockId));
 		
 		//TODO create a 'find report by id' service, and return an appropriate URI here
 		return "" + reportEntity.pk;
@@ -80,9 +91,4 @@ public class ReportServiceBean implements ReportService {
 			amendment.status = ReportStatus.released;
 		}
 	}
-	
-	@Override
-	public Report findByStudy(long studyPk){
-		return reportDao.findByStudy(studyPk);
-	}	
 }

@@ -2,6 +2,7 @@ package com.bisol.medical.webreport.resource;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -20,12 +21,28 @@ public class StudyServiceBean implements StudyService {
 	private StudyDao studyDao;
 	
 	@Override
+	public String lockStudy(long pk){
+		StudyLock lock = StudyLockService.lockStudy(pk, 5*60*1000);
+		return lock.getId().toString();
+	}
+	
+	@Override
+	public void unlockStudy(long pk, String lockId){
+		StudyLockService.unlockStudy(pk, UUID.fromString(lockId));
+	}
+	
+	@Override
 	public List<StudyDto> query(String patientID, String patientName, String accessionNumber, Date startDate, Date endDate, String modality, String reportStatusStr, Integer offset, Integer limit){
 		offset = Math.max(0, offset == null ? 0 : offset);
 		limit = Math.min(100, limit == null ? 100 : limit);
 		ReportStatus reportStatus = parseReportStatus(reportStatusStr);
 		
 		List<StudyDto> studies = studyDao.query(offset, limit, patientID, patientName, accessionNumber, startDate, endDate, modality, reportStatus);
+		for(StudyDto study : studies){//TODO shoud be a join in the DB
+			if(StudyLockService.isLocked(study)){
+				study.locked = true;
+			}
+		}
 		return studies;
 	}
 

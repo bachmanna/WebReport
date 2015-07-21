@@ -14,8 +14,8 @@ import com.bisol.medical.webreport.persistence.Report;
 public interface ReportService {
 
 	@POST
-	@Path(ResourcePath.reportByStudySubmit + "/{studyPk}")
-	String submitReport(@PathParam("studyPk") long studyPk, @QueryParam("rel") String release, String report);
+	@Path(ResourcePath.reportByStudySubmit + "/{studyPk}/{lockId}")
+	String submitReport(@PathParam("studyPk") long studyPk, @PathParam("lockId") String lockId, @QueryParam("rel") String release, String report);
 
 //	@POST
 //	@Path(ResourcePath.reportAmend + "/{reportPk}")

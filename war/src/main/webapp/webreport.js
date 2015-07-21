@@ -1,5 +1,11 @@
 (function(){
 	var app = angular.module('WebReport', []);
+
+	window.onerror = funcion(msg, url, line){
+		console.log('Error: ' + msg);
+		console.log('URL: ' + url);
+		console.log('Line#: ' + line);
+	};
 	
 	app.service('queryFilter', function() {
 		var queryFilter = {
@@ -30,10 +36,23 @@
 		this.reportingStudy = undefined;
 		this.reportingStudyReports = undefined;
 		this.ckEditor = undefined;
+		this.reportingStudyLock = undefined;
 		
 		var ctrl = this;
 		console.log('WebReportController (this): ' + JSON.stringify(this));
 		console.log('WebReportController (var): ' + JSON.stringify(ctrl));
+
+		this.lockStudy = function(study){
+			console.log('locking study for report: ' + study.pk + ' - ' + study.patientName);
+			return $http.get('/webreport/study/' + study.pk + '/lock/');
+		};
+		
+		this.refreshSearch = function(){
+			ctrl.query();
+			ctrl.reporting = false;
+			ctrl.reportingStudy = undefined;
+			ctrl.ckEditor.setData('<p></p>');
+		};
 		
 		this.reportStatusIcon = function(study){
 			if(study.reportStatus === 'typed') return '/webreport/styles/reportTyped.png';
@@ -48,67 +67,103 @@
 			
 			console.log('query: ' + JSON.stringify(queryParams));
 			$http.get('/webreport/study', {params : queryParams}).success(function(data){
-				ctrl.studies = data;
+				ctrl.studies = data.map(function(el){
+					 // used for ng-class
+					if(el.locked){
+						el.locked = 'locked';
+					} else {
+						delete el.locked;
+					};
+					return el;
+				});
 			});
 		};
 		
 		this.report = function(study){
-			console.log('downloading reports of study ' + study.pk + ' - ' + study.patientName);
+			if(study.locked){
+				console.log('study already locked');
+				return;
+			}
 			
-			$http.get('/webreport/report/byStudy/' + study.pk).success(function(data){
-				var releasedReports = [];
-				console.log('success: data = ' + JSON.stringify(data));
-				ctrl.reportingStudy = study;
-				ctrl.reporting = true;
+			ctrl.lockStudy(study).success(function(data){
+				console.log('locked study, lock id = ' + data);
+				reportingStudyLock = data;
 				
-				ctrl.ckEditor.setData('<p></p>');
-				if(data){
-					releasedReports = [data];
-					if(data.amendments){
-						releasedReports.push.apply(releasedReports, data.amendments);
-						releasedReports.sort(function(a, b){
-							return a.reportDatetime - b.reportDatetime;
-						});
+				console.log('downloading reports of study ' + study.pk + ' - ' + study.patientName);
+				$http.get('/webreport/report/byStudy/' + study.pk).success(function(data){
+					var releasedReports = [];
+					console.log('study reports = ' + JSON.stringify(data));
+					ctrl.reportingStudy = study;
+					ctrl.reporting = true;
+					
+					ctrl.ckEditor.setData('<p></p>');
+					if(data){
+						releasedReports = [data];
+						if(data.amendments){
+							releasedReports.push.apply(releasedReports, data.amendments);
+							releasedReports.sort(function(a, b){
+								return a.reportDatetime - b.reportDatetime;
+							});
+						}
+						var lastReport = releasedReports[releasedReports.length-1];
+						if(lastReport.status === 'typed'){
+							releasedReports.splice(-1, 1);
+							ctrl.ckEditor.setData(lastReport.report);
+						}
 					}
-					var lastReport = releasedReports[releasedReports.length-1];
-					if(lastReport.status === 'typed'){
-						releasedReports.splice(-1, 1);
-						ctrl.ckEditor.setData(lastReport.report);
-					}
-				}
-				// damn sanitization removes styles
-				ctrl.reportingStudyReports = releasedReports.map(function(el){
-					console.log('el=' + JSON.stringify(el));
-					el.releaseDateTime = el.reportDatetime || el.amendmentDatetime
-					el.report = $sce.trustAsHtml(el.report);
-					return el;
+					// damn sanitization removes styles
+					ctrl.reportingStudyReports = releasedReports.map(function(el){
+						console.log('sanitising ' + JSON.stringify(el));
+						el.releaseDateTime = el.reportDatetime || el.amendmentDatetime
+						el.report = $sce.trustAsHtml(el.report);
+						return el;
+					});
+					
+				}).error(function(data){
+					console.log('error: data = ' + JSON.stringify(data));
+//		TODO do something
 				});
-				
 			}).error(function(data){
 				console.log('error: data = ' + JSON.stringify(data));
-//	TODO do something
+//TODO do something
 			});
 		};
 		
 		this.cancelReport = function(){
-			ctrl.reporting = false;
-			ctrl.reportingStudy = undefined;
-			ctrl.ckEditor.setData('<p></p>');
+			console.log('unlocking study' + ctrl.reportingStudy.pk);
+			$http({url: '/webreport/study/' + ctrl.reportingStudy.pk +'/lock/' + reportingStudyLock, method: 'DELETE'}).success(function(data){
+				ctrl.refreshSearch();
+			}).error(function(data){
+				console.log('error: data = ' + JSON.stringify(data));
+//TODO do something
+			});
 		};
 		
-		this.submitReport = function(release){
+		this.submitReport = function(release, dontRetry){
 			var queryParams = {rel : release ? "1" : undefined};
-			$http.post('/webreport/report/byStudy/' + ctrl.reportingStudy.pk, 
+			$http.post('/webreport/report/byStudy/' + ctrl.reportingStudy.pk + '/' + ctrl.reportingStudyLock, 
 						ctrl.ckEditor.getData(),
 						{
 							headers : {'Content-Type' : 'text/html'},
 							params : queryParams
 						}
 			).success(function(data){
-				ctrl.query();
-				ctrl.reporting = false;
-				ctrl.reportingStudy = undefined;
-				ctrl.ckEditor.setData('<p></p>');
+				ctrl.refreshSearch();
+			}).error(function(data){
+				if(dontRetry){
+					console.log('error: data = ' + JSON.stringify(data));
+				} else {
+					//TODO this is an optmistic aproach. we should reload the report data from the server, and only proceed if there were no changes
+					console.log('submit fail, retrying lock');
+					ctrl.lockStudy(ctrl.reportingStudy).success(function(newdata){
+						console.log('re-locked study ' + ctrl.reportingStudy.pk);
+						ctrl.reportingStudyLock = newdata;
+						ctrl.submitReport(release, true);
+					}).error(function(data){
+						console.log('error: data = ' + JSON.stringify(data));
+		//TODO do something
+					});
+				}
 			});
 		};
 		

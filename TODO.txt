@@ -3,11 +3,13 @@
 - login
 -- associar usuario ao laudo
 
-- liberar laudo
--- criar area read-only para laudo liberdo
-
-- emendar laudo
--- criar areas read-only para emendas liberadas
--- impressao de laudo + emendas
+- impressao de laudo + emendas
 
 - modelos de laudo
+
+- audio
+
+- fila de rabalho
+
+- controle de atividade para renovar lock de laudo 
+-- mostrar temporizador?

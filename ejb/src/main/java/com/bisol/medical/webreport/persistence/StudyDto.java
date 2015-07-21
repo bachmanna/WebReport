@@ -20,6 +20,7 @@ public class StudyDto {
 	public String reportStatus;
 	public long pk;
 	public long reportPk;
+	public boolean locked = false;
 
 	public StudyDto(long pk2, String patientID, String patientName, String accessionNumber, Timestamp studyDateTime, String modalities, String studyInstanceUid, long reportPk, String reportStatus) {
 		this.pk = pk2;

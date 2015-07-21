@@ -9,6 +9,6 @@ public class ResourcePath {
 								reportAmend = "/",
 								
 								study = "/study",
-								studyQuery = "/";
-	
+								studyQuery = "/",
+								studyLock = "/lock";	
 }

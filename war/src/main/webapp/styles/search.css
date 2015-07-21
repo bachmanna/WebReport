@@ -30,6 +30,10 @@ tr:nth-child(even) {
 	background-color: #e6e6e6;
 }
 
+.studyRow.locked {
+	background-color: #ffff80;
+}
+
 .releasedReport, .releasedReportHeader, .releasedReportData {
 	border: 1px solid #fff;
 }
