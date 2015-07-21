@@ -29,7 +29,6 @@
 		this.reporting = false;
 		this.reportingStudy = undefined;
 		this.reportingStudyReports = undefined;
-		this.reportingStudyUnreleased = undefined;
 		this.ckEditor = undefined;
 		
 		var ctrl = this;
@@ -62,6 +61,7 @@
 				ctrl.reportingStudy = study;
 				ctrl.reporting = true;
 				
+				ctrl.ckEditor.setData('<p></p>');
 				if(data){
 					releasedReports = [data];
 					if(data.amendments){
@@ -72,12 +72,8 @@
 					}
 					var lastReport = releasedReports[releasedReports.length-1];
 					if(lastReport.status === 'typed'){
-						reportingStudyUnreleased = lastReport;
 						releasedReports.splice(-1, 1);
-						ctrl.ckEditor.setData(reportingStudyUnreleased.report);
-					} else {
-						reportingStudyUnreleased = undefined;
-						ctrl.ckEditor.setData('<p></p>');
+						ctrl.ckEditor.setData(lastReport.report);
 					}
 				}
 				// damn sanitization removes styles
@@ -97,6 +93,7 @@
 		this.cancelReport = function(){
 			ctrl.reporting = false;
 			ctrl.reportingStudy = undefined;
+			ctrl.ckEditor.setData('<p></p>');
 		};
 		
 		this.submitReport = function(release){
@@ -111,7 +108,7 @@
 				ctrl.query();
 				ctrl.reporting = false;
 				ctrl.reportingStudy = undefined;
-				
+				ctrl.ckEditor.setData('<p></p>');
 			});
 		};
 		
