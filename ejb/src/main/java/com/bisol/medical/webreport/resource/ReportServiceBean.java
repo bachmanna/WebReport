@@ -57,6 +57,7 @@ public class ReportServiceBean implements ReportService {
 
 	private void amendReport(long studyPk, String reportText, boolean release, Report reportEntity) {
 		ReportAmendment amendment;
+		
 		if(reportEntity.amendments.isEmpty()){
 			logger.info("Creating new report amendment for study " + studyPk);
 			amendment = reportDao.createAmendment(reportEntity.pk, reportText, new Date());
@@ -72,6 +73,9 @@ public class ReportServiceBean implements ReportService {
 				amendment.amendmentDatetime = new Date();
 			}
 		}
+		
+		reportEntity.status = ReportStatus.amended;
+		
 		if(release){
 			amendment.status = ReportStatus.released;
 		}
