@@ -30,7 +30,7 @@ import com.bisol.medical.webreport.ReportStatus;
 @NamedQueries({
 	@NamedQuery(name="webreport.byStudy", query="FROM Report report WHERE report.studyPk = :studyPk"),
 	@NamedQuery(name="webreport.exists", query="SELECT report.pk FROM Report report WHERE report.pk = :pk"),
-	@NamedQuery(name="webreport.isReported", query="SELECT report.pk FROM Report report WHERE report.studyPk = :studyPk")
+	@NamedQuery(name="webreport.isReported", query="SELECT report.pk FROM Report report WHERE report.studyPk = :studyPk AND status = 'released'")
 })
 @SequenceGenerator(name="ReportSequence", initialValue=1, sequenceName="webreport_pk_seq", allocationSize=1)
 public class Report {

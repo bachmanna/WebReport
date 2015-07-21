@@ -1,46 +1,84 @@
 package com.bisol.medical.webreport.resource;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 
 import org.jboss.annotation.ejb.LocalBinding;
 
+import com.bisol.medical.webreport.ReportStatus;
 import com.bisol.medical.webreport.persistence.Report;
+import com.bisol.medical.webreport.persistence.ReportAmendment;
 import com.bisol.medical.webreport.persistence.ReportDao;
 
 @Stateless
 @LocalBinding(jndiBinding="ReportServiceLocal") 
 public class ReportServiceBean implements ReportService {
+
+	private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+	
+	private final Comparator<ReportAmendment> amendmentPkComparator = new Comparator<ReportAmendment>() {
+		@Override
+		public int compare(ReportAmendment o1, ReportAmendment o2) {
+			return (int) (o1.pk - o2.pk);
+		}
+	};
 	
 	@EJB
 	private ReportDao reportDao; 
 	
 	@Override
-	public String submit(long studyPk, String report){
-		if(reportDao.isReported(studyPk)){
-			throw new WebApplicationException("Study of id '" + studyPk + "' already reported", Status.CONFLICT);
+	public String submitReport(long studyPk, String releaseStr, String reportText){
+		boolean release = "1".equals(releaseStr);
+		Report reportEntity = reportDao.findByStudy(studyPk);
+		
+		if(reportEntity == null){
+			logger.info("Creating new report for study " + studyPk);
+			reportEntity = reportDao.create(studyPk, reportText, new Date());
+		} else if(reportEntity.status == ReportStatus.released){
+			amendReport(studyPk, reportText, release, reportEntity);
+		} else {
+			logger.info("Updating report for study " + studyPk);
+			reportEntity.report = reportText;
+			reportEntity.reportDatetime = new Date();
+		}
+
+		if(release){
+			reportEntity.status = ReportStatus.released;
 		}
 		
 		//TODO create a 'find report by id' service, and return an appropriate URI here
-		return "" + reportDao.create(studyPk, report, new Date());
+		return "" + reportEntity.pk;
+	}
+
+	private void amendReport(long studyPk, String reportText, boolean release, Report reportEntity) {
+		ReportAmendment amendment;
+		if(reportEntity.amendments.isEmpty()){
+			logger.info("Creating new report amendment for study " + studyPk);
+			amendment = reportDao.createAmendment(reportEntity.pk, reportText, new Date());
+		} else {
+			Collections.sort(reportEntity.amendments, amendmentPkComparator);
+			amendment = reportEntity.amendments.get(reportEntity.amendments.size()-1);
+			if(amendment.status == ReportStatus.released){
+				logger.info("Creating new report amendment for study " + reportEntity.pk);
+				amendment = reportDao.createAmendment(reportEntity.pk, reportText, new Date());
+			} else {
+				logger.info("Updating report amendment for study " + reportEntity.pk);
+				amendment.report = reportText;
+				amendment.amendmentDatetime = new Date();
+			}
+		}
+		if(release){
+			amendment.status = ReportStatus.released;
+		}
 	}
 	
 	@Override
-	public String amend(long reportPk, String report){
-		if(!reportDao.exists(reportPk)){
-			throw new WebApplicationException("Report of id '" + reportPk + "' not found", Status.CONFLICT);
-		}
-		
-		//TODO create a 'find amendment by id' service, and return an appropriate URI here
-		return "" + reportDao.amend(reportPk, report, new Date());
-	}
-
-	@Override
 	public Report findByStudy(long studyPk){
-		return reportDao.byStudy(studyPk);
-	}
+		return reportDao.findByStudy(studyPk);
+	}	
 }

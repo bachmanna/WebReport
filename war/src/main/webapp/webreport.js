@@ -29,6 +29,7 @@
 		this.reporting = false;
 		this.reportingStudy = undefined;
 		this.reportingStudyReports = undefined;
+		this.reportingStudyUnreleased = undefined;
 		this.ckEditor = undefined;
 		
 		var ctrl = this;
@@ -60,7 +61,6 @@
 				console.log('success: data = ' + JSON.stringify(data));
 				ctrl.reportingStudy = study;
 				ctrl.reporting = true;
-				ctrl.ckEditor.setData('<p></p>');
 				
 				if(data){
 					releasedReports = [data];
@@ -70,11 +70,20 @@
 							return a.reportDatetime - b.reportDatetime;
 						});
 					}
+					var lastReport = releasedReports[releasedReports.length-1];
+					if(lastReport.status === 'typed'){
+						reportingStudyUnreleased = lastReport;
+						releasedReports.splice(-1, 1);
+						ctrl.ckEditor.setData(reportingStudyUnreleased.report);
+					} else {
+						reportingStudyUnreleased = undefined;
+						ctrl.ckEditor.setData('<p></p>');
+					}
 				}
-				
 				// damn sanitization removes styles
 				ctrl.reportingStudyReports = releasedReports.map(function(el){
 					console.log('el=' + JSON.stringify(el));
+					el.releaseDateTime = el.reportDatetime || el.amendmentDatetime
 					el.report = $sce.trustAsHtml(el.report);
 					return el;
 				});
@@ -83,7 +92,6 @@
 				console.log('error: data = ' + JSON.stringify(data));
 //	TODO do something
 			});
-			
 		};
 		
 		this.cancelReport = function(){
@@ -91,10 +99,14 @@
 			ctrl.reportingStudy = undefined;
 		};
 		
-		this.submitReport = function(filterCtrl){
+		this.submitReport = function(release){
+			var queryParams = {rel : release ? "1" : undefined};
 			$http.post('/webreport/report/byStudy/' + ctrl.reportingStudy.pk, 
 						ctrl.ckEditor.getData(),
-						{headers : {'Content-Type' : 'text/html'}}
+						{
+							headers : {'Content-Type' : 'text/html'},
+							params : queryParams
+						}
 			).success(function(data){
 				ctrl.query();
 				ctrl.reporting = false;
@@ -102,6 +114,7 @@
 				
 			});
 		};
+		
 
 		this.insertEditor = function(component){
 			ctrl.ckEditor = CKEDITOR.replace(component);
@@ -109,6 +122,10 @@
 		
 	}]);
 
+	app.controller("ReportPopupController", [function(){
+		
+	}]);
+	
 	app.directive("searchSection", function() {
 		return {
 			restrict: 'E',

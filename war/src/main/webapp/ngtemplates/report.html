@@ -1,19 +1,26 @@
 <section id="reportSection" >
 	<h2>Laudando exame de {{reportctrl.reportingStudy.patientName}}</h2>
 
-	<form name="reportForm">
+	<section id="releasedReportsSection">
 		<div class="releasedReport" ng-repeat="report in reportctrl.reportingStudyReports">
-			<div class="releasedReportHeader">Laudado em {{report.reportDatetime | date:'dd/MM/yyyy às hh:mm:ss'}}</div>
+			<div class="releasedReportHeader">Laudado em {{report.releaseDateTime | date:"dd/MM/yyyy 'às' hh:mm:ss"}}</div>
 			<div class="releasedReportData" ng-bind-html="report.report"></div>
 		</div>
-		
+	</section>
+	
+	<form name="reportForm">
 		<textarea name="report" id="report-editor" rows="20" cols="80"  elem-ready="reportctrl.insertEditor('report-editor')">
 			This is my textarea to be replaced with CKEditor.
 		</textarea>
 
 		<fieldset class="reportForm">
-			<input type="submit" value="Enviar" ng-click="reportctrl.submitReport()"/>
-			<input type="submit" value="Cancelar" ng-click="reportctrl.cancelReport()" />
+<!-- 			<button type="button" ng-dialog="ngtemplates/reportPopup.html" 
+									ng-dialog-class="ngdialog-theme-flat"
+									ng-dialog-controller="ReportPopupController as popupCtrl" 
+									ng-dialog-close-previous>Enviar</button>  -->
+			<input type="submit" value="Enviar" ng-click="reportctrl.submitReport(false)" />
+			<input type="submit" value="Enviar e liberar" ng-click="reportctrl.submitReport(true)" />
+			<input type="submit" value="Descartar" ng-click="reportctrl.cancelReport()" />
 		</fieldset>
 	</form>
 	
