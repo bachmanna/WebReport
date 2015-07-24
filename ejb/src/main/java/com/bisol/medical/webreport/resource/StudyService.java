@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,4 +41,8 @@ public interface StudyService {
 	@Path("/{pk}" + ResourcePath.studyLock + "/{lid}")
 	@Produces(MediaType.TEXT_PLAIN)
 	void unlockStudy(@PathParam("pk") long pk, @PathParam("lid") String lockId);
+
+	@POST
+	@Path("/{pk}" + ResourcePath.studyLock + "/{lid}")
+	void renewStudyLock(@PathParam("pk") long pk, @PathParam("lid") String lockId);
 }

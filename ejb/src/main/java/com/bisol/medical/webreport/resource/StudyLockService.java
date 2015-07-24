@@ -24,7 +24,7 @@ public class StudyLockService {
 		synchronized(studyLocks){
 			StudyLock currentLock = studyLocks.get(studyPk);
 			if(currentLock == null){
-				throw new IllegalStateException("Study already unlocked by");
+				logger.info("Study already unlocked");	// debug
 			}
 			
 			if(currentLock.getId().equals(lockId)){
@@ -34,6 +34,23 @@ public class StudyLockService {
 				throw new IllegalStateException("Cannot unlock study: study " + studyPk + " has a new lock!");
 			}
 			
+		}
+	}
+	
+	public static void renewLock(long studyPk, UUID lockId, long howLong) {
+		synchronized(studyLocks){
+			StudyLock currentLock = studyLocks.get(studyPk);
+			if(currentLock == null){
+				throw new IllegalStateException("Study already unlocked");
+			}
+			
+			if(currentLock.getId().equals(lockId)){
+				long expireTimestamp = new Date().getTime() + howLong;
+				currentLock.setExpireTimestamp(expireTimestamp);
+				logger.info("Renewed lock for study " + studyPk);// debug
+			} else {
+				throw new IllegalStateException("Study has a new lock: " + currentLock.getId().toString() + ", recv = " + lockId.toString());
+			}
 		}
 	}
 	
@@ -68,8 +85,14 @@ public class StudyLockService {
 				StudyLock currentLock = studyLocks.get(studyKey);
 				if(currentLock != null){
 					if(currentLock.getId().equals(myLock.getId())){
-						studyLocks.remove(studyKey);
-						logger.info("Reaper: Unlocked study " + studyKey);// debug
+						long currentTimestamp = new Date().getTime();
+						if(currentLock.getExpireTimestamp() <= currentTimestamp){
+							studyLocks.remove(studyKey);
+							logger.info("Reaper: Unlocked study " + studyKey);// debug
+						} else {
+							reaper.schedule(new ReaperTask(myLock), myLock.getExpireTimestamp() - currentTimestamp);
+							logger.info("Reaper: lock renewed, reescheduling reaper for study " + studyKey);// debug
+						}
 					} else {
 						logger.warn("Reaper: Cannot unlock study: study " + studyKey + " has a new lock!");	//error?					
 					}
@@ -82,22 +105,26 @@ public class StudyLockService {
 }
 
 class StudyLock {
-	private final long expireTimestamp;
 	private final long entityPk;
 	private final String userName = "testUser"; //TODO add suport for loged users
 	private final UUID id = UUID.randomUUID();
+	private long expireTimestamp;
 	
 	public StudyLock(long entityPk, long expireTimestamp) {
 		this.entityPk = entityPk;
 		this.expireTimestamp = expireTimestamp;
 	}
 
-	public String getUserName() {
-		return userName;
+	public void setExpireTimestamp(long newTimestamp) {
+		this.expireTimestamp = newTimestamp;
 	}
-
+	
 	public long getExpireTimestamp() {
 		return expireTimestamp;
+	}
+
+	public String getUserName() {
+		return userName;
 	}
 
 	public long getEntityPk() {

@@ -85,7 +85,7 @@ public class ReportServiceBean implements ReportService {
 			}
 		}
 		
-		reportEntity.status = ReportStatus.amended;
+		reportEntity.status = ReportStatus.typed;
 		
 		if(release){
 			amendment.status = ReportStatus.released;

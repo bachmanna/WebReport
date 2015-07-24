@@ -27,6 +27,11 @@ public class StudyServiceBean implements StudyService {
 	}
 	
 	@Override
+	public void renewStudyLock(long pk, String lockId){
+		StudyLockService.renewLock(pk, UUID.fromString(lockId), 5*60*1000);
+	}
+	
+	@Override
 	public void unlockStudy(long pk, String lockId){
 		StudyLockService.unlockStudy(pk, UUID.fromString(lockId));
 	}

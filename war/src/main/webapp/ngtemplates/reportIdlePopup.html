@@ -1,0 +1,12 @@
+<div class="warning-modal-header">
+	<h3 class="modal-title">Aviso!</h3>
+</div>
+
+<div class="warning-modal-body">
+	<div>{{ctrl.modalMsg}}</div>
+</div>
+
+<div class="modal-footer">
+	<button class="btn btn-primary" ng-click="ctrl.ok()" ng-show="ctrl.showOkBtn">OK</button>
+	<button class="btn btn-warning" ng-click="ctrl.cancel()">Cancel</button>
+</div>

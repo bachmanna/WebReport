@@ -2,14 +2,13 @@
 
 - login
 -- associar usuario ao laudo
+-- fila de rabalho
 
 - impressao de laudo + emendas
 
 - modelos de laudo
 
 - audio
-
-- fila de rabalho
 
 - controle de atividade para renovar lock de laudo 
 -- mostrar temporizador?
