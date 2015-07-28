@@ -76,9 +76,17 @@
 					if(status < 400){
 						console.log('Renewed study lock');
 					} else {
-						//TODO do something! alert the user
-						console.log('Error renewing study lock: ');
-						console.log(JSON.stringify(data));
+						console.log('Error renewing study lock: ' + JSON.stringify(data));
+						ctrl.showWarningPopup('Ocorreu um erro ao renovar acesso exclusivo ao exame. Deseja tentar continuar o laudo? ', true, '',
+							function() {				// ok callback
+								$log.info('Trying to relock study');
+								ctrl.resumeReport();
+							}, 
+							function() {				// cancel callback
+								$log.info('Unlocked report canceled');
+								ctrl.cancelReport();
+							}
+						);
 					}
 				});
 			}
@@ -92,9 +100,8 @@
 			
 			ctrl.showWarningPopup('A atividade de laudo expirou devido a inatividade. Deseja continuar o laudo? ', true, '',
 				function() {				// ok callback
-					$log.info('Trying to resume idlereport');
-					ctrl.reportingStudy.locked = false;
-					ctrl.report(reportingStudy, true);
+					$log.info('Trying to resume idle report');
+					ctrl.resumeReport();
 				}, 
 				function() {				// cancel callback
 					$log.info('Idle report canceled');
@@ -103,6 +110,11 @@
 			);
 		});
 
+		this.resumeReport = function(){
+			ctrl.reportingStudy.locked = false;
+			ctrl.report(reportingStudy, true);
+		}
+		
 		this.showWarningPopup = function(message, showOkBtn, size, okCallback, dissmissCallback){
 			var modalInstance = $modal.open({
 				animation : false,
@@ -160,14 +172,17 @@
 					};
 					return el;
 				});
+			}).error(function(data){
+				$log.info('error: data = ' + JSON.stringify(data));
+//TODO do something
 			});
 		};
 		
 		// Starts reporting the selected study
 		this.report = function(study, isResumingIdle){
 			if(study.locked){
-				// TODO show read-only report? what's the use, someone is working on it 
 				$log.info('study already locked');
+				ctrl.showWarningPopup('O exame selecionado já está sendo trabalhado. ', false, '', undefined, undefined);
 				return;
 			}
 			
@@ -237,11 +252,19 @@
 					
 				}).error(function(data){
 					$log.info('Get reports error: data = ' + JSON.stringify(data));
-//		TODO do something
+					ctrl.showWarningPopup('Não foi possível verificar os laudos existentes do exame selecionado. ', false, '', undefined,
+						function() {				// cancel callback
+							ctrl.refreshSearch();
+						}
+					);
 				});
 			}).error(function(data){
 				$log.info('Lock study error: data = ' + JSON.stringify(data));
-//TODO do something
+				ctrl.showWarningPopup('Não foi possível obter exclusividade do exame selecionado. ', false, '', undefined,
+					function() {				// cancel callback
+						ctrl.refreshSearch();
+					}
+				);
 			});
 		};
 		
@@ -253,8 +276,8 @@
 			$http({url: '/webreport/study/' + ctrl.reportingStudy.pk +'/lock/' + reportingStudyLock, method: 'DELETE'}).success(function(data){
 				ctrl.refreshSearch();
 			}).error(function(data){
-				$log.info('error: data = ' + JSON.stringify(data));
-//TODO do something
+				$log.info('error releasing lock: data = ' + JSON.stringify(data));
+				ctrl.refreshSearch();
 			});
 		};
 		

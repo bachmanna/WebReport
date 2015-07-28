@@ -1,0 +1,105 @@
+/*
+.color-primary-0 { color: #73AFA0 }	
+.color-primary-1 { color: #C0DED6 }
+.color-primary-2 { color: #99C8BC }
+.color-primary-3 { color: #539A88 }
+.color-primary-4 { color: #388673 }
+
+.color-secondary-1-0 { color: #719BA9 }	
+.color-secondary-1-1 { color: #BFD4DB }
+.color-secondary-1-2 { color: #98B9C4 }
+.color-secondary-1-3 { color: #528394 }
+.color-secondary-1-4 { color: #396F81 }
+
+.color-secondary-2-0 { color: #7FC196 }	
+.color-secondary-2-1 { color: #C7E5D1 }
+.color-secondary-2-2 { color: #A3D5B4 }
+.color-secondary-2-3 { color: #5DAD78 }
+.color-secondary-2-4 { color: #3F975D }
+*/
+
+.idented {
+	text-indent: 3em;
+}
+
+/* ui-bootstrap?*/
+.nav, .pagination, .carousel, .panel-title a { 
+	cursor: pointer; 
+}
+
+header {
+	background-color: #99C8BC;
+}
+
+body {
+	background-color: #99C8BC;
+	font-family: serif;
+}
+
+#searchSection {
+	border: 0px;
+	margin: 0px;
+	background-color: #98B9C4;
+	padding: 10px;
+}
+
+.searchFilter {
+	background-color: #98B9C4;
+}
+
+#searchResults {
+	background-color: #99C8BC;
+	margin-top: 20px;
+}
+
+#searchResultsLabel{
+	display: none;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table, td, th {
+	border: 1px solid #C0DED6;
+	text-align: left;
+}
+
+td, th {
+	padding: 5px;
+}
+
+tr:nth-child(even) {
+	background-color: #A3D5B4;
+}
+
+.studyRow.locked {
+	background-color: #396F81;
+}
+
+#reportSection {
+	background-color: #99C8BC;
+}
+
+fieldset.reportForm {
+	border: 1px solid #ffffff;
+}
+
+.releasedReport, .releasedReportHeader, .releasedReportData {
+	padding: 5px;
+}
+
+.releasedReportData {
+	background-color: #98B9C4
+}
+
+.releasedReportData {
+	background-color: #fff;
+}
+
+#releasedReportsSection {
+	border-color: #98B9C4;
+	border-width: 10px;
+	border-style: solid
+}

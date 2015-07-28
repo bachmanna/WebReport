@@ -2,6 +2,7 @@
 	<h2>Laudando exame de {{reportctrl.reportingStudy.patientName}}</h2>
 
 	<section id="releasedReportsSection">
+		<h2>Histórico de revisões ({{reportctrl.reportingStudyReports.length}}) </h2>
 		<div class="releasedReport" ng-repeat="report in reportctrl.reportingStudyReports">
 			<div class="releasedReportHeader">Laudado em {{report.releaseDateTime | date:"dd/MM/yyyy 'às' hh:mm:ss"}}</div>
 			<div class="releasedReportData" ng-bind-html="report.report"></div>

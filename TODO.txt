@@ -10,5 +10,4 @@
 
 - audio
 
-- controle de atividade para renovar lock de laudo 
--- mostrar temporizador?
+- controle de erros (testar popups)

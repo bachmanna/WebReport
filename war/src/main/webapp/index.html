@@ -2,8 +2,8 @@
 <html ng-app="WebReport" lang="pb-br">
 <head>
 	<meta charset="utf-8" lang="pt_br">
-	<link href="styles/search.css" type="text/css" media="screen" rel="stylesheet"/>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link href="styles/palete1.css" type="text/css" media="screen" rel="stylesheet"/>
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> -->
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.js"></script>
 	<script src="scripts/ui-bootstrap-tpls-0.13.0.min.js"></script>
@@ -15,6 +15,11 @@
 	<title>WebReport</title>
 </head>
 <body ng-controller="WebReportController as webreportCtrl">
+	<header>
+		<h1>
+			WebReport
+		</h1>
+	</header>
 	<search-section reportctrl="webreportCtrl" ng-hide="webreportCtrl.reporting"></search-section>
 	<report-section reportctrl="webreportCtrl" ng-show="webreportCtrl.reporting"></report-section>
 </body>
